@@ -2668,9 +2668,13 @@ void SV_SaveGame(const char *gamename, qboolean autosave)
 #ifdef __vita__
 	/* Only suppress the automatic level-start/transition save. SV_ServerLoaded
 	 * invokes that save while svs.autosave is true, then clears the flag.
+	 * Clear the prior level's last-save pointer as well: until this level
+	 * reaches a scripted checkpoint, death must restart the current map instead
+	 * of loading a manual/autosave slot from an older mission.
 	 * Mission-script checkpoints also use autosave == qtrue, but occur later
 	 * with svs.autosave false and must be preserved for death/continue. */
 	if (autosave && svs.autosave) {
+		Cvar_Set("g_lastsave", "");
 		return;
 	}
 #endif
