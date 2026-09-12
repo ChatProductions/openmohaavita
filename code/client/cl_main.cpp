@@ -1013,8 +1013,13 @@ void CL_Disconnect() {
 
 	clc.state = CA_DISCONNECTED;
 
+	// Keep the Vita retail-style default; tests can opt in via the dev menu.
+#ifdef __vita__
+	Cvar_Set( "sv_cheats", "0" );
+#else
 	// allow cheats locally
 	Cvar_Set( "sv_cheats", "1" );
+#endif
 
 	// not connected to a pure server anymore
 	cl_connectedToPureServer = qfalse;
