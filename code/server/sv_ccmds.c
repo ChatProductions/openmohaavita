@@ -261,7 +261,11 @@ static void SV_Map_f( void ) {
 	{
 		if( svs.iNumClients == 1 )
 		{
+#ifdef __vita__
+			Cvar_Set( "cheats", "0" );
+#else
 			Cvar_Set( "cheats", "1" );
+#endif
 		}
 		else if( strstr( cmd, "devmap" ) )
 		{
@@ -2502,7 +2506,11 @@ void SV_Loadgame_f(void)
 
 	if (!developer->integer) {
 		if (svs.iNumClients == 1) {
+#ifdef __vita__
+			Cvar_Set("cheats", "0");
+#else
 			Cvar_Set("cheats", "1");
+#endif
 		} else {
 			Cvar_Set("cheats", "0");
 		}
