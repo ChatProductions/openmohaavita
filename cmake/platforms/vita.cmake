@@ -64,7 +64,16 @@ set(USE_INTERNAL_OPUS OFF CACHE INTERNAL "")
 # VitaSDK's packaged libmad uses the short-enum ABI, while OpenMoHAA is
 # compiled with -fno-short-enums. Build the bundled copy with the engine so
 # both sides agree on public libmad structure layouts at runtime.
+#
+# Do not enable libmad's legacy imdct_l_arm.S fast path here. That source is
+# ARM-state code but lacks function/mapping metadata, so our Thumb caller emits
+# a same-state BL and the Vita executes ARM instructions as Thumb. The result
+# is a prefetch abort on the first MP3 frame. The generic C fixed-point path is
+# slower but correct and still far smaller than expanding every MP3 to WAV.
 set(USE_INTERNAL_MAD ON CACHE INTERNAL "")
+set(ASO OFF CACHE BOOL "Disable unsafe legacy libmad ARM assembly on Vita" FORCE)
+set(FPM_ARM OFF CACHE BOOL "Disable libmad ARM fixed-point path on Vita" FORCE)
+set(FPM_DEFAULT ON CACHE BOOL "Use libmad generic fixed-point math on Vita" FORCE)
 set(USE_VOIP OFF CACHE INTERNAL "")
 set(USE_MUMBLE OFF CACHE INTERNAL "")
 set(USE_FREETYPE OFF CACHE INTERNAL "")
