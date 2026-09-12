@@ -61,7 +61,10 @@ set(USE_INTERNAL_JPEG OFF CACHE INTERNAL "")
 set(USE_INTERNAL_OGG OFF CACHE INTERNAL "")
 set(USE_INTERNAL_VORBIS OFF CACHE INTERNAL "")
 set(USE_INTERNAL_OPUS OFF CACHE INTERNAL "")
-set(USE_INTERNAL_MAD OFF CACHE INTERNAL "")
+# VitaSDK's packaged libmad uses the short-enum ABI, while OpenMoHAA is
+# compiled with -fno-short-enums. Build the bundled copy with the engine so
+# both sides agree on public libmad structure layouts at runtime.
+set(USE_INTERNAL_MAD ON CACHE INTERNAL "")
 set(USE_VOIP OFF CACHE INTERNAL "")
 set(USE_MUMBLE OFF CACHE INTERNAL "")
 set(USE_FREETYPE OFF CACHE INTERNAL "")
@@ -163,7 +166,6 @@ list(APPEND COMMON_LIBRARIES
     ogg
     opusfile
     opus
-    mad
     curl
     ssl
     crypto
