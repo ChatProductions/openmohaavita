@@ -2322,15 +2322,10 @@ qboolean SV_ArchiveLevelFile(qboolean loading, qboolean autosave)
 		 * crash-free; real saving waits on the deep serialization fix. */
 		return qtrue;
 #elif defined(__vita__)
-		/* Vita transition autosaves remain disabled in SV_SaveGame().  Manual
-		 * saves must write the .sav level payload as well as the .ssv metadata;
-		 * without it the menu shows a save slot which SV_Loadgame_f can never
-		 * load.  The Vita cgame shutdown now drains transient command/effect
-		 * state before the persistent module heap is released, so exercise the
-		 * normal archiver for fresh manual saves. */
-		if (autosave) {
-			return qtrue;
-		}
+		/* Vita level-start/transition autosaves are filtered in SV_SaveGame()
+		 * while svs.autosave is set. Scripted in-level checkpoints also arrive
+		 * with autosave == qtrue, but svs.autosave is false by then and they must
+		 * write both the .sav level payload and .ssv metadata. */
 #endif
 		cls.savedCgameStateSize = cge->CG_SaveStateToBuffer(&cls.savedCgameState, svs.time);
 		ge->WriteLevel(name, autosave, (byte **)&cls.savedCgameState, &cls.savedCgameStateSize);
@@ -2663,13 +2658,11 @@ void SV_SaveGame(const char *gamename, qboolean autosave)
 	}
 
 #ifdef __vita__
-	/* Vita: the AUTOMATIC level-start/transition autosave (SV_Autosavegame_f ->
-	 * SV_SaveGame(NULL, qtrue), fired from SV_SpawnServer in sv_init.c) archives
-	 * the half-built next-level state on the single-binary .suprx and faults on
-	 * the cross-level transition -- the crash seen walking into the 2nd level.
-	 * The user wants MANUAL saves only, so drop every automatic save here.
-	 * Manual menu saves (autosave == qfalse) fall through and run normally. */
-	if (autosave) {
+	/* Only suppress the automatic level-start/transition save. SV_ServerLoaded
+	 * invokes that save while svs.autosave is true, then clears the flag.
+	 * Mission-script checkpoints also use autosave == qtrue, but occur later
+	 * with svs.autosave false and must be preserved for death/continue. */
+	if (autosave && svs.autosave) {
 		return;
 	}
 #endif
