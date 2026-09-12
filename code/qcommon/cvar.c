@@ -1754,6 +1754,10 @@ void Cvar_Init (void)
 	 * immediately instead of only after a restart ("cheats will be changed upon
 	 * restarting"). Default stays 1 = cheats available. */
 	cvar_cheats = Cvar_Get("cheats", "1", CVAR_SYSTEMINFO );
+#elif defined(__vita__)
+	/* Vita ships with cheats disabled. Keep this unlatched so the dev menu can
+	 * still enable them explicitly for a test session without a restart. */
+	cvar_cheats = Cvar_Get("cheats", "0", CVAR_SYSTEMINFO );
 #else
 	cvar_cheats = Cvar_Get("cheats", "1", CVAR_LATCH | CVAR_SYSTEMINFO );
 #endif
