@@ -1081,7 +1081,11 @@ void SV_Init (void)
 	sv_maplist = Cvar_Get( "sv_maplist", "", CVAR_ARCHIVE | CVAR_SERVERINFO );
 
 	// systeminfo
+#ifdef __vita__
+	Cvar_Get( "cheats", "0", CVAR_SYSTEMINFO );
+#else
 	Cvar_Get( "cheats", "1", CVAR_LATCH | CVAR_SYSTEMINFO );
+#endif
 	sv_serverid = Cvar_Get ("sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
     // wombat: pure only makes problems at current stage
     // sv_pure is disabled by default in mohaa
